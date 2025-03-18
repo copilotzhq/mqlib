@@ -21,6 +21,41 @@ interface NormalizedConnection {
 type SqliteLibraryType = "wasm" | "native" | "unknown";
 
 /**
+ * Interface for the standardized SQLite connection returned to users
+ */
+export interface StandardizedSqliteConnection {
+  /**
+   * Executes a SQL query with parameters.
+   */
+  query: (sql: string, params?: unknown[]) => Promise<any>;
+  
+  /**
+   * Begins a new transaction.
+   */
+  beginTransaction: () => Promise<void>;
+
+  /**
+   * Commits the current transaction.
+   */
+  commitTransaction: () => Promise<void>;
+
+  /**
+   * Rolls back the current transaction.
+   */
+  rollbackTransaction: () => Promise<void>;
+  
+  /**
+   * Closes the database connection.
+   */
+  close: () => void;
+
+  /**
+   * Returns the type of SQLite implementation being used.
+   */
+  getImplementationType: () => "wasm" | "native";
+}
+
+/**
  * Creates a SQLite connection that can be used with MQLib.
  * 
  * @param dbPathOrLibrary The path to the SQLite database file, or ":memory:" for an in-memory database
@@ -30,7 +65,7 @@ type SqliteLibraryType = "wasm" | "native" | "unknown";
 export async function createSqliteConnection(
   dbPathOrLibrary: string | any = ":memory:",
   preferNativeOrOptions: boolean | { detectLibrary?: boolean } = true
-) {
+): Promise<StandardizedSqliteConnection> {
   // Handle the case when a library instance is directly provided
   if (typeof dbPathOrLibrary !== 'string') {
     return createConnectionFromLibrary(dbPathOrLibrary, ":memory:");
@@ -72,7 +107,10 @@ export async function createSqliteConnection(
  * @param dbPath The path to the SQLite database file, or ":memory:" for an in-memory database
  * @returns A connection object that can be used with MQLib
  */
-export async function createConnectionFromLibrary(library: any, dbPath: string = ":memory:") {
+export async function createConnectionFromLibrary(
+  library: any, 
+  dbPath: string = ":memory:"
+): Promise<StandardizedSqliteConnection> {
   if (!library) {
     throw new Error("SQLite library instance is required");
   }
@@ -123,7 +161,7 @@ function detectLibraryType(library: any): SqliteLibraryType {
 /**
  * Creates a standardized connection interface from a normalized connection
  */
-function createStandardizedConnection(connection: NormalizedConnection) {
+function createStandardizedConnection(connection: NormalizedConnection): StandardizedSqliteConnection {
   return {
     /**
      * Executes a SQL query with parameters.
@@ -487,7 +525,7 @@ async function createNativeConnection(dbPath: string): Promise<NormalizedConnect
 async function createWasmConnection(dbPath: string): Promise<NormalizedConnection> {
   try {
     // Import the SQLite module dynamically
-    const { DB } = await import("https://deno.land/x/sqlite@v3.9.1/mod.ts");
+    const { DB } = await import("jsr:@pomdtr/sqlite@3.9.1");
     
     // Create a new SQLite database connection
     const db = new DB(dbPath);

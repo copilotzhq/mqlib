@@ -29,7 +29,12 @@ export { Collection } from "./src/core/collection.ts";
 export { Database } from "./src/core/database.ts";
 
 // Export adapters directly for convenience
-export { SqliteAdapter, createSqliteConnection, createConnectionFromLibrary } from "./src/adapters/sqlite/mod.ts";
+export { 
+  SqliteAdapter, 
+  createSqliteConnection, 
+  createConnectionFromLibrary
+} from "./src/adapters/sqlite/mod.ts";
+export type { StandardizedSqliteConnection } from "./src/adapters/sqlite/mod.ts";
 
 // TO DO: Implement PostgreSQL and MySQL adapters
 // export { PostgresAdapter, createPostgresConnection } from "./src/adapters/postgres/mod.ts";
