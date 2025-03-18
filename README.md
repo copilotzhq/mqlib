@@ -8,7 +8,8 @@ MQLib is a library that provides a MongoDB-like API for SQL databases. It allows
 - Support for MongoDB query operators (`$eq`, `$gt`, `$lt`, `$gte`, `$lte`, `$in`, `$nin`, `$and`, `$or`, `$not`, etc.)
 - Support for MongoDB update operators (`$set`, `$unset`, `$inc`, `$push`, `$pull`, etc.)
 - JSON Schema validation for document structure
-- SQL dialect support (PostgreSQL, MySQL, SQLite)
+- SQL dialect support (SQLite for now, PostgreSQL and MySQL coming soon)
+- Dependency injection for database drivers (reduced bundle size)
 - Parameterized queries to prevent SQL injection
 - Efficient handling of nested objects (as JSON columns when appropriate)
 
@@ -16,30 +17,29 @@ MQLib is a library that provides a MongoDB-like API for SQL databases. It allows
 
 ```bash
 # Using Deno
-import { Database, SqliteAdapter } from "https://deno.land/x/mqlib/mod.ts";
+import { Database, SqliteAdapter, createConnectionFromLibrary } from "jsr:@copilotz/mqlib";
 ```
 
 ## Usage
 
 ### Connecting to a Database
 
+MQLib uses dependency injection for database connections, which keeps the library small and gives you flexibility to choose your preferred database driver:
+
 ```typescript
-import { Database, SqliteAdapter } from "https://deno.land/x/mqlib/mod.ts";
-import { DB } from "https://deno.land/x/sqlite/mod.ts";
+import { Database, SqliteAdapter, createConnectionFromLibrary } from "jsr:@copilotz/mqlib";
 
-// Create a SQLite connection
-const sqliteDb = new DB("example.db");
-const connection = {
-  query: (sql: string, params: unknown[] = []) => {
-    const result = sqliteDb.query(sql, params);
-    return { rows: result };
-  }
-};
+// Import your preferred SQLite library
+// Native SQLite (requires --allow-env --allow-ffi --unstable-ffi)
+import sqliteLib from "jsr:@db/sqlite@0.11";
+// OR WASM SQLite
+import sqliteLib from "jsr:@pomdtr/sqlite@3.9.1";
 
-// Create a SQLite adapter
+// Create a connection with auto-detection of library type
+const connection = await createConnectionFromLibrary(sqliteLib, "example.db");
+
+// Create an adapter and database instance
 const adapter = new SqliteAdapter();
-
-// Create a database instance
 const db = new Database("example", adapter, connection);
 ```
 
@@ -129,15 +129,53 @@ await users.createIndex("email", { unique: true });
 
 // Create a compound index
 await users.createIndex({ age: -1, name: 1 });
+
 ```
+
+
+
+### Advanced: SQLite Connection Interface
+
+For TypeScript users who want to create custom connection implementations, MQLib exports the `StandardizedSqliteConnection` interface:
+
+```typescript
+import type { StandardizedSqliteConnection } from "jsr:@copilotz/mqlib";
+
+// Implement a custom connection that follows the standardized interface
+const myCustomConnection: StandardizedSqliteConnection = {
+  query: async (sql, params = []) => {
+    // Your implementation here
+  },
+  beginTransaction: async () => {
+    // Start a transaction
+  },
+  commitTransaction: async () => {
+    // Commit a transaction
+  },
+  rollbackTransaction: async () => {
+    // Rollback a transaction
+  },
+  close: () => {
+    // Close the connection
+  },
+  getImplementationType: () => {
+    return "native"; // or "wasm"
+  }
+};
+
+// Use your custom connection
+const adapter = new SqliteAdapter();
+const db = new Database("example", adapter, myCustomConnection);
+```
+
 
 ## SQL Dialect Support
 
 MQLib supports multiple SQL dialects through adapters:
 
 - SQLite: `SqliteAdapter`
-- PostgreSQL: `PostgresAdapter`
-- MySQL: `MySqlAdapter`
+- PostgreSQL: `PostgresAdapter` (coming soon)
+- MySQL: `MySqlAdapter` (coming soon)
 
 Each adapter handles the translation of MongoDB-style queries to the specific SQL dialect.
 

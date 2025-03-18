@@ -31,7 +31,6 @@ export { Database } from "./src/core/database.ts";
 // Export adapters directly for convenience
 export { 
   SqliteAdapter, 
-  createSqliteConnection, 
   createConnectionFromLibrary
 } from "./src/adapters/sqlite/mod.ts";
 export type { StandardizedSqliteConnection } from "./src/adapters/sqlite/mod.ts";

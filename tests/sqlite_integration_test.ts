@@ -12,7 +12,7 @@
  */
 
 import { assertEquals, assertNotEquals, assertExists } from "https://deno.land/std@0.204.0/testing/asserts.ts";
-import { Database, Document, SqliteAdapter, createSqliteConnection, createConnectionFromLibrary } from "../mod.ts";
+import { Database, Document, SqliteAdapter, createConnectionFromLibrary } from "../mod.ts";
 
 // Define a test document interface with nested objects and arrays
 interface User extends Document {
