@@ -12,7 +12,7 @@
  */
 
 import { assertEquals, assertNotEquals, assertExists } from "https://deno.land/std@0.204.0/testing/asserts.ts";
-import { Database, Document, SqliteAdapter, createConnectionFromLibrary } from "../mod.ts";
+import { Database, type Document, SqliteAdapter, createConnectionFromLibrary } from "../mod.ts";
 
 // Define a test document interface with nested objects and arrays
 interface User extends Document {
@@ -89,7 +89,7 @@ async function runTestsWithImplementation(implementationType: "native" | "wasm")
     if (implementationType === "native") {
       sqliteLib = await import("jsr:@db/sqlite@0.11");
     } else {
-      sqliteLib = await import("https://deno.land/x/sqlite@v3.9.1/mod.ts");
+      sqliteLib = await import("jsr:@pomdtr/sqlite@3.9.1");
     }
   } catch (error) {
     console.warn(`Failed to import ${implName} SQLite library:`, error);
