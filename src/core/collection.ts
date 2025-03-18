@@ -2,12 +2,13 @@
  * Collection implementation for MQLib
  */
 
-import { Collection as ICollection, IndexOptions } from "../interfaces/collection.ts";
-import { SqlAdapter } from "../interfaces/adapter.ts";
-import { Document, WithId, OptionalId, DocumentId } from "../types/document.ts";
-import { Filter, FindOptions } from "../types/filter.ts";
-import { UpdateOperator, UpdateOptions, DeleteOptions } from "../types/update.ts";
-import { 
+import type { Collection as ICollection, IndexOptions } from "../interfaces/collection.ts";
+import type { SqlAdapter } from "../interfaces/adapter.ts";
+import type { Document, WithId, OptionalId, DocumentId } from "../types/document.ts";
+import type { Filter, FindOptions } from "../types/filter.ts";
+import type { UpdateOperator, UpdateOptions, DeleteOptions } from "../types/update.ts";
+import { ObjectId } from "bson";
+import type { 
   InsertOneResult, 
   InsertManyResult, 
   UpdateResult, 
@@ -763,9 +764,7 @@ export class Collection<T extends Document> implements ICollection<T> {
    * @returns A unique ID
    */
   private generateId(): DocumentId {
-    // Generate a random string ID
-    // In a real implementation, we would use a more robust ID generation method
-    return crypto.randomUUID();
+    return new ObjectId().toString();
   }
 
   /**
