@@ -17,7 +17,7 @@ MQLib is a library that provides a MongoDB-like API for SQL databases. It allows
 
 ```bash
 # Using Deno
-import { Database, SqliteAdapter, createConnectionFromLibrary } from "jsr:@copilotz/mqlib";
+import { Database, SqliteAdapter, createSqliteConnection } from "jsr:@copilotz/mqlib";
 ```
 
 ## Usage
@@ -27,16 +27,16 @@ import { Database, SqliteAdapter, createConnectionFromLibrary } from "jsr:@copil
 MQLib uses dependency injection for database connections, which keeps the library small and gives you flexibility to choose your preferred database driver:
 
 ```typescript
-import { Database, SqliteAdapter, createConnectionFromLibrary } from "jsr:@copilotz/mqlib";
+import { Database, SqliteAdapter, createSqliteConnection } from "jsr:@copilotz/mqlib";
 
 // Import your preferred SQLite library
 // Native SQLite (requires --allow-env --allow-ffi --unstable-ffi)
-import sqliteLib from "jsr:@db/sqlite@0.11";
+import * as sqliteLib from "jsr:@db/sqlite@0.11";
 // OR WASM SQLite
-import sqliteLib from "jsr:@pomdtr/sqlite@3.9.1";
+import * as sqliteLib from "jsr:@pomdtr/sqlite@3.9.1";
 
 // Create a connection with auto-detection of library type
-const connection = await createConnectionFromLibrary(sqliteLib, "example.db");
+const connection = await createSqliteConnection(sqliteLib, "example.db");
 
 // Create an adapter and database instance
 const adapter = new SqliteAdapter();
@@ -130,42 +130,6 @@ await users.createIndex("email", { unique: true });
 // Create a compound index
 await users.createIndex({ age: -1, name: 1 });
 
-```
-
-
-
-### Advanced: SQLite Connection Interface
-
-For TypeScript users who want to create custom connection implementations, MQLib exports the `StandardizedSqliteConnection` interface:
-
-```typescript
-import type { StandardizedSqliteConnection } from "jsr:@copilotz/mqlib";
-
-// Implement a custom connection that follows the standardized interface
-const myCustomConnection: StandardizedSqliteConnection = {
-  query: async (sql, params = []) => {
-    // Your implementation here
-  },
-  beginTransaction: async () => {
-    // Start a transaction
-  },
-  commitTransaction: async () => {
-    // Commit a transaction
-  },
-  rollbackTransaction: async () => {
-    // Rollback a transaction
-  },
-  close: () => {
-    // Close the connection
-  },
-  getImplementationType: () => {
-    return "native"; // or "wasm"
-  }
-};
-
-// Use your custom connection
-const adapter = new SqliteAdapter();
-const db = new Database("example", adapter, myCustomConnection);
 ```
 
 
