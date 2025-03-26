@@ -62,7 +62,7 @@ export interface StandardizedSqliteConnection {
  * @param dbPath The path to the SQLite database file, or ":memory:" for an in-memory database
  * @returns A connection object that can be used with MQLib
  */
-export async function createConnectionFromLibrary(
+export async function createConnection(
   library: any, 
   dbPath: string = ":memory:"
 ): Promise<StandardizedSqliteConnection> {

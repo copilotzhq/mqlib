@@ -12,7 +12,7 @@
  */
 
 import { assertEquals, assertNotEquals, assertExists } from "https://deno.land/std@0.204.0/testing/asserts.ts";
-import { Database, type Document, SqliteAdapter, createConnectionFromLibrary } from "../mod.ts";
+import { Database, type Document, SqliteAdapter, createSqliteConnection } from "../mod.ts";
 
 // Define a test document interface with nested objects and arrays
 interface User extends Document {
@@ -98,7 +98,7 @@ async function runTestsWithImplementation(implementationType: "native" | "wasm")
   
   Deno.test(`SQLite Integration (${implName}) - Basic CRUD Test`, async () => {
     // Create a connection using the factory with the imported library
-    const connection = await createConnectionFromLibrary(sqliteLib, ":memory:");
+    const connection = await createSqliteConnection(sqliteLib, ":memory:");
     console.log(`Using ${connection.getImplementationType()} SQLite implementation`);
     
     const adapter = new SqliteAdapter();
@@ -207,7 +207,7 @@ async function runTestsWithImplementation(implementationType: "native" | "wasm")
 
   Deno.test(`SQLite Integration (${implName}) - Complex Objects and Queries`, async () => {
     // Create a connection using the factory with the imported library
-    const connection = await createConnectionFromLibrary(sqliteLib, ":memory:");
+    const connection = await createSqliteConnection(sqliteLib, ":memory:");
     
     const adapter = new SqliteAdapter();
     
@@ -379,7 +379,7 @@ async function runTestsWithImplementation(implementationType: "native" | "wasm")
 
   Deno.test(`SQLite Integration (${implName}) - Array Manipulation Operations`, async () => {
     // Create a connection using the factory with the imported library
-    const connection = await createConnectionFromLibrary(sqliteLib, ":memory:");
+    const connection = await createSqliteConnection(sqliteLib, ":memory:");
     
     const adapter = new SqliteAdapter();
     
@@ -546,7 +546,7 @@ async function runTestsWithImplementation(implementationType: "native" | "wasm")
 
   Deno.test(`SQLite Integration (${implName}) - Advanced Query Operations`, async () => {
     // Create a connection using the factory with the imported library
-    const connection = await createConnectionFromLibrary(sqliteLib, ":memory:");
+    const connection = await createSqliteConnection(sqliteLib, ":memory:");
     
     const adapter = new SqliteAdapter();
     
@@ -729,7 +729,7 @@ Deno.test("SQLite Integration - Auto-detection Test", async () => {
     }
     
     // Create a connection using the factory with auto-detection
-    connection = await createConnectionFromLibrary(sqliteLib, ":memory:");
+    connection = await createSqliteConnection(sqliteLib, ":memory:");
     
     const adapter = new SqliteAdapter();
     adapter.setSchemaEnabled(true);

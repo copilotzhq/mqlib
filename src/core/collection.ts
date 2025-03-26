@@ -7,7 +7,7 @@ import type { SqlAdapter } from "../interfaces/adapter.ts";
 import type { Document, WithId, OptionalId, DocumentId } from "../types/document.ts";
 import type { Filter, FindOptions } from "../types/filter.ts";
 import type { UpdateOperator, UpdateOptions, DeleteOptions } from "../types/update.ts";
-import { ObjectId } from "bson";
+import { ObjectId } from "npm:bson@6.2.0";
 import type { 
   InsertOneResult, 
   InsertManyResult, 
